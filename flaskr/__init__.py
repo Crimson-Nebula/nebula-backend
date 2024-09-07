@@ -1,9 +1,9 @@
 import os
 
 from flask import Flask
+from couchdb import Server
+from flaskext.couchdb import Document
 from . import auth
-from . import db
-from . import blog
 
 
 def create_app(test_config=None):
@@ -26,16 +26,14 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+    
+    server = Server()
 
-    db.init_app(app)
     # a simple page that says hello
     @app.route('/hello')
     def hello():
         return 'Hello, World!'
 
     app.register_blueprint(auth.bp)
-
-    app.register_blueprint(blog.bp)
-    app.add_url_rule('/', endpoint='index')
 
     return app
