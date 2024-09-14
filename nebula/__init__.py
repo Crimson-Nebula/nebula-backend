@@ -1,8 +1,6 @@
 import os
 
-from flask import Flask
-from couchdb import Server
-from flaskext.couchdb import Document
+from flask import Flask, jsonify
 from flask_cors import CORS
 from . import user
 
@@ -13,7 +11,7 @@ def create_app(test_config=None):
     CORS(app)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        DATABASE=os.path.join(app.instance_path, 'nebula.sqlite'),
     )
 
     if test_config is None:
@@ -23,19 +21,10 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-    
-    server = Server()
-
     # a simple page that says hello
-    @app.route('/hello')
+    @app.route('/')
     def hello():
-        return 'Hello, World!'
+        return jsonify({"Hello": "World"})
 
     app.register_blueprint(user.bp)
-
     return app

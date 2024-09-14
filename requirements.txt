@@ -1,3 +1,4 @@
-Flask
-Flask-CouchDB
-python-dotenv
+Flask >= 3.0.3
+Flask-CouchDB >= 0.2.1
+python-dotenv >= 1.0.1
+flask-cors >= 5.0.0
