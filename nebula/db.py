@@ -36,3 +36,10 @@ class CouchDB:
             return self.db[doc_id]
         except couchdb.http.ResourceNotFound:
             return None
+    
+    # Delete a document by its ID
+    def delete_document(self, doc_id):
+        try:
+            return self.db[doc_id].delete()
+        except couchdb.http.ResourceNotFound:
+            return None
