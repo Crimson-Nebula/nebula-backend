@@ -1,5 +1,9 @@
+import os
 import functools
-from flask import jsonify
+import time
+from flask import jsonify, Response
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 from flask import (
     Blueprint, flash, g, redirect, request, session, url_for, current_app
@@ -13,38 +17,54 @@ bp = Blueprint('user', __name__, url_prefix='/user')
 # Remember to check the return types :)
 ### END ###
 
+@bp.before_request
+def verify_session():
+    #Respond to CORS preflight requests
+    if request.method.lower() == 'options':
+        return Response()
+
+    # Don't enforce auth on login endpoint
+    if request.endpoint == "user.login":
+        return None
+
+    #Enforce logged in
+    if 'user_id' not in session:
+        print("Not logged in")
+        return "Not logged in", 401
+    if time.time() > session['expiry']:
+        print("Session Expired")
+        return "Session Expired", 401
+
 @bp.route('/create', methods=['POST'])
-def register():
+def create():
     return jsonify({"status": "Not Implemented"})
 
 @bp.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        print(request.cookies)
-        print(request.form)
+    try:
+        token = request.form.get("credential")
 
-    return jsonify({'response': 'success'})
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), os.getenv('GOOGLE_CLIENT_ID'))
+        google_id = idinfo['sub']
 
-@bp.before_app_request
-def load_logged_in_user():
-    user_id = session.get('user_id')
+        #Create session
+        session['user_id'] = google_id
+        session['expiry'] = int(time.time()) + 60 #Expires in 1 minute
 
-    if user_id is None:
-        g.user = None
-    else:
-        g.user = ""
+        #Check if user exists
+        user_exists = False
+        if user_exists:
+            #Redirect to home page
+            return jsonify({"status": "OK"})
+        else:
+            #Redirect to user creation page
+            return jsonify({"status": "CREATE_USER"})
+
+    except Exception as e:
+        print(e)
+        return "Failed to login", 500
 
 @bp.route('/logout', methods=['GET'])
 def logout():
     session.clear()
-    return redirect(url_for('index'))
-
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for('auth.login'))
-
-        return view(**kwargs)
-
-    return wrapped_view
+    return "OK", 200
