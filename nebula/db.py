@@ -10,9 +10,15 @@ from dotenv import load_dotenv
 class CouchDB:
     load_dotenv()
     password = os.getenv("CouchDB_PASSWORD")
-    def __init__(self, url="http://admin:" + password + "@localhost:5984/", db_name='test'):
+    def __init__(self, url=None, db_name='test'):
+        # Set default URL using the password from environment
+        if url is None:
+            url = f"http://admin:{self.password}@localhost:5984/"
+        
         self.server = Server(url)
         self.db_name = db_name
+        
+        # Check if the database exists, otherwise create it
         if db_name in self.server:
             self.db = self.server[db_name]
         else:
@@ -30,16 +36,3 @@ class CouchDB:
             return self.db[doc_id]
         except couchdb.http.ResourceNotFound:
             return None
-        
-
-if __name__ == "__main__":
-    db = CouchDB()
-
-    # Create a new document
-    new_doc = {"name": "John Doe", "age": 30, "city": "New York"}
-    db.create_document(new_doc)
-
-    # Read the document
-    doc_id = new_doc['_id']
-    document = db.read_document(doc_id)
-    print(document)
