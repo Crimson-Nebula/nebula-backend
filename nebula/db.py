@@ -26,6 +26,17 @@ auth_id_view = ViewDefinition(
     }'''
 )
 
+post_id_view = ViewDefinition(
+    'posts',   
+    'by_post_id',  
+    '''function (doc) {
+        if (doc.post_id) {
+            emit(doc.post_id, doc);
+        }
+    }'''
+)
+
+
 class CouchDB:
     load_dotenv()
     password = os.getenv("CouchDB_PASSWORD")
@@ -43,9 +54,10 @@ class CouchDB:
                 self.server.create(db_name)
 
         db_user = self.server['users']
+        db_post = self.server['posts']
         user_id_view.sync(db_user)
         auth_id_view.sync(db_user)
-
+        post_id_view.sync(db_post)
 
      # Create a document in the database
     def create_document(self, data, db_name):
@@ -100,3 +112,15 @@ class CouchDB:
 
         related_docs = [row.value for row in result]
         return related_docs
+        return related_docs   
+    
+    def read_posts_all(self, post_id, db_name):
+        if db_name in self.server:
+            db = self.server[db_name]
+        else:
+            raise RuntimeError("Bad BD name")
+        result = post_id_view(db, key=post_id)
+        # Collect and return all the documents related to the given user_id
+        related_docs = [row.value for row in result]
+        return related_docs  
+
