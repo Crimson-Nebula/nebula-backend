@@ -124,3 +124,5 @@ class CouchDB:
         related_docs = [row.value for row in result]
         return related_docs  
 
+    ## TODO: Create a new function that sends all the timestamps of all the data in the posts database
+    ## TODO: Create a new view definition to support the above functionality

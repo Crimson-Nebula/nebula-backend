@@ -3,7 +3,7 @@ import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
-from . import user
+from . import user, post
 from .db import CouchDB
 
 
@@ -38,6 +38,7 @@ def create_app(test_config=None):
     print(test_related)
     
     app.register_blueprint(user.bp)
+    app.register_blueprint(post.bp)
     return app
 
 

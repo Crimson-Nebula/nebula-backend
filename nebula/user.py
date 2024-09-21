@@ -21,7 +21,6 @@ bp = Blueprint('user', __name__, url_prefix='/user')
 @bp.before_request
 def verify_session():
     #Respond to CORS preflight requests
-    return None
     if request.method.lower() == 'options':
         return Response()
 
