@@ -119,7 +119,7 @@ class CouchDB:
             db = self.server[db_name]
         else:
             raise RuntimeError("Bad BD name")
-        result = post_id_view(db, key=post_id)
+        result = post_id_view(db)[post_id]
         # Collect and return all the documents related to the given user_id
         related_docs = [row.value for row in result]
         return related_docs  
