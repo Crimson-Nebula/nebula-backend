@@ -85,7 +85,7 @@ class CouchDB:
         else:
             raise RuntimeError("Bad BD name")
         
-        result = user_id_view(db, key=user_id)
+        result = user_id_view(db)[user_id]
         # Collect and return all the documents related to the given user_id
         related_docs = [row.value for row in result]
         return related_docs
@@ -96,7 +96,7 @@ class CouchDB:
         else:
             raise RuntimeError("Bad BD name")
         
-        result = auth_id_view(db, key=auth_id)
+        result = auth_id_view(db)[auth_id]
 
         related_docs = [row.value for row in result]
         return related_docs

@@ -1,12 +1,13 @@
 import os
-import functools
 import time
+import uuid
+
 from flask import jsonify, Response
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
 from flask import (
-    Blueprint, flash, g, redirect, request, session, url_for, current_app
+    Blueprint, request, session, current_app
 )
 
 bp = Blueprint('user', __name__, url_prefix='/user')
@@ -27,6 +28,13 @@ def verify_session():
     if request.endpoint == "user.login":
         return None
 
+    # Only require auth_id on signup endpoint
+    if request.endpoint == "user.signup":
+        if 'auth_id' not in session:
+            return "No auth provided", 401
+        else:
+            return None
+
     #Enforce logged in
     if 'user_id' not in session:
         print("Not logged in")
@@ -35,9 +43,19 @@ def verify_session():
         print("Session Expired")
         return "Session Expired", 401
 
-@bp.route('/create', methods=['POST'])
-def create():
-    return jsonify({"status": "Not Implemented"})
+@bp.route('/signup', methods=['POST'])
+def signup():
+    db = current_app.config['COUCHDB_CONNECTION']
+
+    user = {
+        'user_id': str(uuid.uuid4()),
+        'auth_id': session['auth_id'],
+        'username': request.json['username']
+    }
+
+    db.create_document(user, "users")
+
+    return "Success", 200
 
 @bp.route('/login', methods=['POST'])
 def login():
@@ -48,13 +66,19 @@ def login():
         google_id = idinfo['sub']
 
         #Create session
-        session['user_id'] = google_id
-        session['expiry'] = int(time.time()) + 60 #Expires in 1 minute
+        session['auth_id'] = google_id
+        session['expiry'] = int(time.time()) + 3600 #Expires in 1 hour (for now)
 
         #Check if user exists
-        user_exists = False
+        db = current_app.config['COUCHDB_CONNECTION']
+
+        user_lookup = db.read_auth_id(google_id, "users")
+        print(user_lookup)
+
+        user_exists = len(user_lookup) > 0
         if user_exists:
             #Redirect to home page
+            session['user_id'] = user_lookup[0]['user_id']
             return jsonify({"status": "OK"})
         else:
             #Redirect to user creation page
