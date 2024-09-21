@@ -16,6 +16,15 @@ user_id_view = ViewDefinition(
         }
     }'''
 )
+auth_id_view = ViewDefinition(
+    'users',   
+    'by_auth_id',  
+    '''function (doc) {
+        if (doc.auth_id) {
+            emit(doc.auth_id, doc);
+        }
+    }'''
+)
 
 class CouchDB:
     load_dotenv()
@@ -35,6 +44,7 @@ class CouchDB:
 
         db_user = self.server['users']
         user_id_view.sync(db_user)
+        auth_id_view.sync(db_user)
 
 
      # Create a document in the database
@@ -69,7 +79,7 @@ class CouchDB:
         except couchdb.http.ResourceNotFound:
             return None
 
-    def read_realted_all(self, user_id, db_name):
+    def read_user_id(self, user_id, db_name):
         if db_name in self.server:
             db = self.server[db_name]
         else:
@@ -78,4 +88,15 @@ class CouchDB:
         result = user_id_view(db, key=user_id)
         # Collect and return all the documents related to the given user_id
         related_docs = [row.value for row in result]
-        return related_docs        
+        return related_docs
+
+    def read_auth_id(self, auth_id, db_name):
+        if db_name in self.server:
+            db = self.server[db_name]
+        else:
+            raise RuntimeError("Bad BD name")
+        
+        result = auth_id_view(db, key=auth_id)
+
+        related_docs = [row.value for row in result]
+        return related_docs
