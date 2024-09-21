@@ -21,6 +21,7 @@ bp = Blueprint('user', __name__, url_prefix='/user')
 @bp.before_request
 def verify_session():
     #Respond to CORS preflight requests
+    return None
     if request.method.lower() == 'options':
         return Response()
 
@@ -92,3 +93,19 @@ def login():
 def logout():
     session.clear()
     return "OK", 200
+
+@bp.route('/info', methods=['GET'])
+def get_info():
+    user_id = request.json.get('user_id')
+    if user_id:
+        print("user_id present")
+    else:
+        RuntimeError("No user_id provided")
+    
+    db = current_app.config['COUCHDB_CONNECTION']
+    db_name = "users"
+
+    info = db.read_user_id(user_id, db_name)
+    return jsonify(info), 200
+
+    
