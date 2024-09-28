@@ -13,6 +13,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config['SECRET_KEY'] = "dev"
+    app.config["SESSION_COOKIE_SAMESITE"] = "None"
     CORS(app, supports_credentials=True)
 
     # Connecting to the database
