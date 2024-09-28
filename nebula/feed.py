@@ -1,13 +1,6 @@
-import functools
 import time
-
-from flask import jsonify
-from datetime import datetime
-import uuid
-
-
 from flask import (
-    Blueprint, flash, g, redirect, request, session, url_for, current_app
+    Blueprint, Response, request, session, current_app, jsonify
 )
 
 bp = Blueprint('feed', __name__, url_prefix='/feed')
@@ -18,12 +11,24 @@ bp = Blueprint('feed', __name__, url_prefix='/feed')
 # Remember to check the return types :)
 ### END ###
 
+@bp.before_request
+def verify_session():
+    #Respond to CORS preflight requests
+    if request.method.lower() == 'options':
+        return Response()
+
+    #Enforce logged in
+    if 'user_id' not in session:
+        print("Not logged in")
+        return "Not logged in", 401
+    if time.time() > session['expiry']:
+        print("Session Expired")
+        return "Session Expired", 401
+
 @bp.route('/', methods=['GET'])
 def get_feed():
     db = current_app.config['COUCHDB_CONNECTION']
 
-    ## TODO: Get all the posts from the posts database
-    ## TODO: Sort the posts using their timestamps and return the most recent 5 posts
     documents = db.read_recent_posts(int(time.time()) - 60 * 60 * 24) #all posts in the past 24 hours
 
     posts = []
