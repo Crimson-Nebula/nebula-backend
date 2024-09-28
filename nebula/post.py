@@ -5,7 +5,7 @@ import uuid
 
 
 from flask import (
-    Blueprint, flash, g, redirect, request, session, url_for, current_app
+    Blueprint, request, session, Response, current_app
 )
 
 bp = Blueprint('post', __name__, url_prefix='/post')
@@ -15,6 +15,21 @@ bp = Blueprint('post', __name__, url_prefix='/post')
 # You can use the functions of the CouchDB class from the instance, DO NOT need to use import statements
 # Remember to check the return types :)
 ### END ###
+
+
+@bp.before_request
+def verify_session():
+    #Respond to CORS preflight requests
+    if request.method.lower() == 'options':
+        return Response()
+
+    #Enforce logged in
+    if 'user_id' not in session:
+        print("Not logged in")
+        return "Not logged in", 401
+    if time.time() > session['expiry']:
+        print("Session Expired")
+        return "Session Expired", 401
 
 @bp.route('/create', methods=['POST'])
 def create_post():

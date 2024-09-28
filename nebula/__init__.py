@@ -3,7 +3,7 @@ import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
-from . import user, post
+from . import user, post, feed
 from .db import CouchDB
 
 
@@ -28,17 +28,18 @@ def create_app(test_config=None):
         return jsonify({"Hello": "World"})
 
     # Test data setup: Create new documents
-    db_name = "users"
-    new_doc1 = {"name": "John Doe", "auth_id": 1, "user_id": 1, "Post IDs": [1,2,5]}
-    new_doc2 = {"name": "John Doe", "auth_id": 1, "user_id": 1, "Post ID": 21}
-    couchdb_instance.create_document(new_doc1, db_name)
-    couchdb_instance.create_document(new_doc2, db_name)
+    # db_name = "users"
+    # new_doc1 = {"name": "John Doe", "auth_id": 1, "user_id": 1, "Post IDs": [1,2,5]}
+    # new_doc2 = {"name": "John Doe", "auth_id": 1, "user_id": 1, "Post ID": 21}
+    # couchdb_instance.create_document(new_doc1, db_name)
+    # couchdb_instance.create_document(new_doc2, db_name)
 
-    test_related = couchdb_instance.read_auth_id(1, db_name)
-    print(test_related)
+    # test_related = couchdb_instance.read_auth_id(1, db_name)
+    # print(test_related)
     
     app.register_blueprint(user.bp)
     app.register_blueprint(post.bp)
+    app.register_blueprint(feed.bp)
     return app
 
 

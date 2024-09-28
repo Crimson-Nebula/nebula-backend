@@ -36,6 +36,16 @@ post_id_view = ViewDefinition(
     }'''
 )
 
+post_timestamp_view = ViewDefinition(
+    'posts',
+    'by_post_timestamp',
+    '''function (doc) {
+        if (doc.timestamp) {
+            emit(doc.timestamp, doc);
+        }
+    }'''
+)
+
 
 class CouchDB:
     load_dotenv()
@@ -122,7 +132,15 @@ class CouchDB:
         result = post_id_view(db)[post_id]
         # Collect and return all the documents related to the given user_id
         related_docs = [row.value for row in result]
-        return related_docs  
+        return related_docs
 
     ## TODO: Create a new function that sends all the timestamps of all the data in the posts database
     ## TODO: Create a new view definition to support the above functionality
+
+    #All posts made after the time_cutoff (unix time) will be returned
+    def read_recent_posts(self, time_cutoff):
+        db = self.server['posts']
+        result = post_timestamp_view(db)[time_cutoff:]
+        # Collect and return all the documents that matched
+        related_docs = [row.value for row in result]
+        return related_docs
