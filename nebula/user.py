@@ -47,13 +47,17 @@ def verify_session():
 def signup():
     db = current_app.config['COUCHDB_CONNECTION']
 
+    user_id = str(uuid.uuid4())
+
     user = {
-        'user_id': str(uuid.uuid4()),
+        'user_id': user_id,
         'auth_id': session['auth_id'],
         'username': request.json['username']
     }
 
     db.create_document(user, "users")
+
+    session['user_id'] = user_id
 
     return "Success", 200
 
