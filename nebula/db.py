@@ -84,6 +84,7 @@ class CouchDB:
         user_id_view.sync(db_user)
         auth_id_view.sync(db_user)
         post_id_view.sync(db_post)
+        post_timestamp_view.sync(db_post)
 
      # Create a document in the database
     def create_document(self, data, db_name):
