@@ -1,3 +1,5 @@
+import time
+
 from couchdb import Server
 import couchdb
 import uuid
@@ -54,14 +56,28 @@ class CouchDB:
         # Set default URL using the password from environment
         db_names = ["users", "posts" ]
         if url is None:
-            url = f"http://admin:{self.password}@localhost:5984/"
-        
+            if os.getenv("DOCKER") == "TRUE":
+                print("Running in Docker")
+                url = f"http://admin:{self.password}@nebula_db:5984/"
+            else:
+                print("Running directly on localhost")
+                url = f"http://admin:{self.password}@localhost:5984/"
+        print("Connected to DB")
+
         self.server = Server(url)       
         
         # Check if the database exists, otherwise create it
-        for db_name in db_names:
-            if db_name not in self.server:
-                self.server.create(db_name)
+        db_connected = False
+
+        while not db_connected:
+            print("Attempting to connect to DB")
+            try:
+                for db_name in db_names:
+                    if db_name not in self.server:
+                        self.server.create(db_name)
+                db_connected = True
+            except Exception as e:
+                time.sleep(1)
 
         db_user = self.server['users']
         db_post = self.server['posts']
