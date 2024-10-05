@@ -11,19 +11,20 @@ bp = Blueprint('feed', __name__, url_prefix='/feed')
 # Remember to check the return types :)
 ### END ###
 
-@bp.before_request
-def verify_session():
-    #Respond to CORS preflight requests
-    if request.method.lower() == 'options':
-        return Response()
+## TODO: Make it so that the posts are sent in a ordered list or something 
 
-    #Enforce logged in
-    if 'user_id' not in session:
-        print("Not logged in")
-        return "Not logged in", 401
-    if time.time() > session['expiry']:
-        print("Session Expired")
-        return "Session Expired", 401
+
+@bp.before_request
+# def verify_session():
+#     #Respond to CORS preflight requests
+#     if request.method.lower() == 'options':
+#         return Response()
+
+#     #Enforce logged in
+#     if 'user_id' not in session:
+#         return {"status": "Not logged in"}, 401
+#     if time.time() > session['expiry']:
+#         return {"status": "Session Expired"}, 401
 
 @bp.route('/', methods=['GET'])
 def get_feed():
@@ -33,7 +34,7 @@ def get_feed():
 
     posts = []
     for doc in documents:
-        user = db.read_user_id(doc['posterId'], "users")[0]
+        user = db.read_user_id(doc['posterId'])
 
         post = {
             "id": doc["post_id"],
@@ -43,11 +44,12 @@ def get_feed():
             "username": user["username"],
         }
         posts.append(post)
-
+    # Sorting through the list an making it so that the posts are in a descending order in terms of time of posting
+    sorted_posts = sorted(posts, key=lambda post: post['timestamp'], reverse=True)
     response = {
         "page": 0,
         "pagination": 0,
-        "posts": posts
+        "posts": sorted_posts
     }
 
-    return jsonify(response)
+    return jsonify(response), 200

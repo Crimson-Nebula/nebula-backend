@@ -31,17 +31,15 @@ def verify_session():
     # Only require auth_id on signup endpoint
     if request.endpoint == "user.signup":
         if 'auth_id' not in session:
-            return "No auth provided", 401
+            return {"status": "No auth provided"}, 401
         else:
             return None
 
     #Enforce logged in
     if 'user_id' not in session:
-        print("Not logged in")
-        return "Not logged in", 401
+        return {"status": "Not logged in"}, 401
     if time.time() > session['expiry']:
-        print("Session Expired")
-        return "Session Expired", 401
+        return {"status": "Session Expired"}, 401
 
 @bp.route('/signup', methods=['POST'])
 def signup():
@@ -55,11 +53,11 @@ def signup():
         'username': request.json['username']
     }
 
-    db.create_document(user, "users")
+    db.create_user_document(user)
 
     session['user_id'] = user_id
 
-    return "Success", 200
+    return "", 200
 
 @bp.route('/login', methods=['POST'])
 def login():
@@ -76,7 +74,7 @@ def login():
         #Check if user exists
         db = current_app.config['COUCHDB_CONNECTION']
 
-        user_lookup = db.read_auth_id(google_id, "users")
+        user_lookup = db.read_auth_id(google_id)
         print(user_lookup)
 
         user_exists = len(user_lookup) > 0
@@ -103,12 +101,15 @@ def get_info():
     if user_id:
         print("user_id present")
     else:
-        RuntimeError("No user_id provided")
+        return {"status":"No User ID provided"}, 500
     
     db = current_app.config['COUCHDB_CONNECTION']
-    db_name = "users"
 
-    info = db.read_user_id(user_id, db_name)
+    user_info = db.read_user_id(user_id)
+    info = {
+        "id": user_info['user_id'],
+        "username": user_info['username'],
+    }
     return jsonify(info), 200
 
     

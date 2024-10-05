@@ -25,18 +25,16 @@ def verify_session():
 
     #Enforce logged in
     if 'user_id' not in session:
-        print("Not logged in")
-        return "Not logged in", 401
+        return {"status": "Not logged in"}, 401
     if time.time() > session['expiry']:
-        print("Session Expired")
-        return "Session Expired", 401
+        return {"status": "Session Expired"}, 401
 
 @bp.route('/create', methods=['POST'])
 def create_post():
     
     data = request.get_json()
     if data is None:
-        return 'bad request', 400
+        return {"status":"Bad Request"}, 400
     
     db = current_app.config['COUCHDB_CONNECTION']
     db_name = "posts"
@@ -47,7 +45,6 @@ def create_post():
         "timestamp": int(time.time()),
         "posterId": session["user_id"]
     }
-    db.create_document(post, db_name)
-    #database.createPost(data)
-    return 'Success', 200
+    db.create_post_document(post)
+    return "", 200
 
