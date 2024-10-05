@@ -113,7 +113,7 @@ class CouchDB:
         result = user_id_view(db)[user_id]
         # Collect and return all the documents related to the given user_id
         related_docs = [row.value for row in result]
-        return related_docs
+        return related_docs[0]
 
     def read_auth_id(self, auth_id):
         if "users" in self.server:

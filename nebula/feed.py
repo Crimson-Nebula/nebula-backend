@@ -22,11 +22,9 @@ def verify_session():
 
     #Enforce logged in
     if 'user_id' not in session:
-        print("Not logged in")
-        return "Not logged in", 401
+        return {"status": "Not logged in"}, 401
     if time.time() > session['expiry']:
-        print("Session Expired")
-        return "Session Expired", 401
+        return {"status": "Session Expired"}, 401
 
 @bp.route('/', methods=['GET'])
 def get_feed():
@@ -53,4 +51,4 @@ def get_feed():
         "posts": posts
     }
 
-    return jsonify(response)
+    return jsonify(response), 200

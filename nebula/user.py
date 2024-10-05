@@ -31,17 +31,15 @@ def verify_session():
     # Only require auth_id on signup endpoint
     if request.endpoint == "user.signup":
         if 'auth_id' not in session:
-            return "No auth provided", 401
+            return {"status": "No auth provided"}, 401
         else:
             return None
 
     #Enforce logged in
     if 'user_id' not in session:
-        print("Not logged in")
-        return "Not logged in", 401
+        return {"status": "Not logged in"}, 401
     if time.time() > session['expiry']:
-        print("Session Expired")
-        return "Session Expired", 401
+        return {"status": "Session Expired"}, 401
 
 @bp.route('/signup', methods=['POST'])
 def signup():
@@ -59,7 +57,7 @@ def signup():
 
     session['user_id'] = user_id
 
-    return "Success", 200
+    return "", 200
 
 @bp.route('/login', methods=['POST'])
 def login():
@@ -108,7 +106,11 @@ def get_info():
     db = current_app.config['COUCHDB_CONNECTION']
     db_name = "users"
 
-    info = db.read_user_id(user_id, db_name)
+    user_info = db.read_user_id(user_id, db_name)
+    info = {
+        "id": user_info['user_id'],
+        "username": user_info['username'],
+    }
     return jsonify(info), 200
 
     
