@@ -53,7 +53,7 @@ def signup():
         'username': request.json['username']
     }
 
-    db.create_user_document(user, "users")
+    db.create_user_document(user)
 
     session['user_id'] = user_id
 
@@ -74,7 +74,7 @@ def login():
         #Check if user exists
         db = current_app.config['COUCHDB_CONNECTION']
 
-        user_lookup = db.read_auth_id(google_id, "users")
+        user_lookup = db.read_auth_id(google_id)
         print(user_lookup)
 
         user_exists = len(user_lookup) > 0
@@ -101,12 +101,11 @@ def get_info():
     if user_id:
         print("user_id present")
     else:
-        RuntimeError("No user_id provided")
+        return {"status":"No User ID provided"}, 500
     
     db = current_app.config['COUCHDB_CONNECTION']
-    db_name = "users"
 
-    user_info = db.read_user_id(user_id, db_name)
+    user_info = db.read_user_id(user_id)
     info = {
         "id": user_info['user_id'],
         "username": user_info['username'],

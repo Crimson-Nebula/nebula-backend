@@ -45,6 +45,6 @@ def create_post():
         "timestamp": int(time.time()),
         "posterId": session["user_id"]
     }
-    db.create_document(post, db_name)
+    db.create_post_document(post)
     return "", 200
 
