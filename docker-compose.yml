@@ -10,6 +10,7 @@ services:
     environment:
       - DOCKER=TRUE
       - PYTHONUNBUFFERED=1
+      - SECRET_KEY=
       - CouchDB_PASSWORD=
       - GOOGLE_CLIENT_ID=
 
