@@ -11,6 +11,9 @@ bp = Blueprint('feed', __name__, url_prefix='/feed')
 # Remember to check the return types :)
 ### END ###
 
+## TODO: Make it so that the posts are sent in a ordered list or something 
+
+
 @bp.before_request
 def verify_session():
     #Respond to CORS preflight requests

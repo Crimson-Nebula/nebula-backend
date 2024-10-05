@@ -1,4 +1,3 @@
-import functools
 from flask import jsonify
 import time
 import uuid
@@ -47,7 +46,7 @@ def create_post():
         "timestamp": int(time.time()),
         "posterId": session["user_id"]
     }
-    db.create_document(post, db_name)
+    db.create_post_document(post, db_name)
     #database.createPost(data)
     return 'Success', 200
 

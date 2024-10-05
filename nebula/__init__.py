@@ -1,5 +1,4 @@
 import os
-
 from flask import Flask, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -9,10 +8,10 @@ from .db import CouchDB
 
 def create_app(test_config=None):
     load_dotenv()
-
+    secret = os.getenv("SECRET_KEY")
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.config['SECRET_KEY'] = "dev"
+    app.config['SECRET_KEY'] = secret
     app.config["SESSION_COOKIE_SAMESITE"] = "None"
     CORS(app, supports_credentials=True)
 

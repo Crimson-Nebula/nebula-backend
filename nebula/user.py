@@ -55,7 +55,7 @@ def signup():
         'username': request.json['username']
     }
 
-    db.create_document(user, "users")
+    db.create_user_document(user, "users")
 
     session['user_id'] = user_id
 
