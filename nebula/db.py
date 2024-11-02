@@ -11,9 +11,15 @@ load_dotenv()
 password = os.getenv("POSTGRES_PASSWORD")
 username = os.getenv("POSTGRES_USER")
 db_name = os.getenv("POSTGRES_DB")
-host = "localhost"
 
-DATABASE_URL = f"postgresql://{username}:{password}@{host}/{db_name}"
+DATABASE_URL = ""
+if os.getenv("DOCKER") == "TRUE":
+    print("Running in Docker")
+    DATABASE_URL = f"postgresql://{username}:{password}@nebula_db/{db_name}"
+else:
+    print("Running directly on localhost")
+    DATABASE_URL = f"postgresql://{username}:{password}@localhost/{db_name}"
+
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
