@@ -5,7 +5,7 @@ import uuid
 
 
 from flask import (
-    Blueprint, request, session, Response, current_app
+    Blueprint, request, session, Response, current_app, jsonify
 )
 
 bp = Blueprint('post', __name__, url_prefix='/post')
@@ -45,6 +45,6 @@ def create_post():
         "timestamp": int(time.time()),
         "posterId": session["user_id"]
     }
-    db.create_post_document(post)
+    db.create_post(post)
     return "", 200
 

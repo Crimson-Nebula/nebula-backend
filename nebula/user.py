@@ -53,7 +53,7 @@ def signup():
         'username': request.json['username']
     }
 
-    db.create_user_document(user)
+    db.create_user(user)
 
     session['user_id'] = user_id
 
@@ -74,16 +74,11 @@ def login():
         #Check if user exists
         db = current_app.config['COUCHDB_CONNECTION']
 
-        user_lookup = db.read_auth_id(google_id)
-        print(user_lookup)
-
-        user_exists = len(user_lookup) > 0
-        if user_exists:
-            #Redirect to home page
-            session['user_id'] = user_lookup[0]['user_id']
+        user_lookup = db.get_user_by_auth_id(google_id)
+        if user_lookup:
+            session['user_id'] = user_lookup[0].user_id
             return jsonify({"status": "OK"})
         else:
-            #Redirect to user creation page
             return jsonify({"status": "CREATE_USER"})
 
     except Exception as e:
@@ -105,11 +100,11 @@ def get_info():
     
     db = current_app.config['COUCHDB_CONNECTION']
 
-    user_info = db.read_user_id(user_id)
-    info = {
-        "id": user_info['user_id'],
-        "username": user_info['username'],
-    }
+    user_info = db.get_user_by_user_id(user_id)
+    if not user_info:
+        return {"status": "User not found"}, 404
+    info = {"id": user_info.user_id, "username": user_info.username}
+    
     return jsonify(info), 200
 
     

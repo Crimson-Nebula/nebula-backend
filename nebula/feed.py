@@ -30,11 +30,11 @@ bp = Blueprint('feed', __name__, url_prefix='/feed')
 def get_feed():
     db = current_app.config['COUCHDB_CONNECTION']
 
-    documents = db.read_recent_posts(int(time.time()) - 60 * 60 * 24) #all posts in the past 24 hours
+    documents = db.get_recent_posts(int(time.time()) - 60 * 60 * 24) #all posts in the past 24 hours
 
     posts = []
     for doc in documents:
-        user = db.read_user_id(doc['posterId'])
+        user = db.get_user_by_user_id(doc['posterId'])
 
         post = {
             "id": doc["post_id"],
