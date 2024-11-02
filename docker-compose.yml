@@ -11,8 +11,10 @@ services:
       - DOCKER=TRUE
       - PYTHONUNBUFFERED=1
       - SECRET_KEY=
-      - CouchDB_PASSWORD=
       - GOOGLE_CLIENT_ID=
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=
+      - POSTGRES_DB=nebula
 
   nebula_db:
     image: postgres:latest
