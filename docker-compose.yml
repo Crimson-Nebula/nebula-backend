@@ -15,10 +15,11 @@ services:
       - GOOGLE_CLIENT_ID=
 
   nebula_db:
-    image: couchdb:latest
+    image: postgres:latest
     container_name: nebula_db
     environment:
-      - COUCHDB_USER=admin
-      - COUCHDB_PASSWORD=
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=
+      - POSTGRES_DB=nebula
     ports:
       - 5984:5984
