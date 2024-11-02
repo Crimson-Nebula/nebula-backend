@@ -24,4 +24,4 @@ services:
       - POSTGRES_PASSWORD=
       - POSTGRES_DB=nebula
     ports:
-      - 5984:5984
+      - 5432:5432
