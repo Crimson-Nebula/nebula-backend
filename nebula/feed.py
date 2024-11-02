@@ -28,20 +28,20 @@ bp = Blueprint('feed', __name__, url_prefix='/feed')
 
 @bp.route('/', methods=['GET'])
 def get_feed():
-    db = current_app.config['COUCHDB_CONNECTION']
+    db = current_app.config['DB_CONNECTION']
 
-    documents = db.read_recent_posts(int(time.time()) - 60 * 60 * 24) #all posts in the past 24 hours
+    documents = db.get_recent_posts(int(time.time()) - 60 * 60 * 24) #all posts in the past 24 hours
 
     posts = []
     for doc in documents:
-        user = db.read_user_id(doc['posterId'])
+        user = db.get_user_by_user_id(doc.poster_id)
 
         post = {
-            "id": doc["post_id"],
-            "content": doc["content"],
-            "timestamp": doc["timestamp"],
-            "posterId": doc["posterId"],
-            "username": user["username"],
+            "id": doc.post_id,
+            "content": doc.content,
+            "timestamp": doc.timestamp,
+            "posterId": doc.poster_id,
+            "username": user.username,
         }
         posts.append(post)
     # Sorting through the list an making it so that the posts are in a descending order in terms of time of posting

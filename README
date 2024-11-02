@@ -1,0 +1,47 @@
+## For Postgres
+
+To install PostgreSQL on your computer and be able to run the command `sudo -iu postgres psql`, follow these steps based on your operating system:
+
+### For Ubuntu/Debian
+
+1. **Update Package List**:
+   Open a terminal and run:
+   ```bash
+   sudo apt update
+   ```
+
+2. **Install PostgreSQL**:
+   Install PostgreSQL and the necessary dependencies:
+   ```bash
+   sudo apt install postgresql postgresql-contrib
+   ```
+
+3. **Start PostgreSQL Service**:
+   Ensure that the PostgreSQL service is running:
+   ```bash
+   sudo systemctl start postgresql
+   sudo systemctl enable postgresql  # Optional: starts PostgreSQL on boot
+   ```
+
+4. **Switch to the `postgres` User and Access `psql`**:
+   Run the command:
+   ```bash
+   sudo -iu postgres psql
+   ```
+
+### After Installation
+
+1. Create a DB
+    ```SQL
+    CREATE DATABASE nebula;
+    ```
+2. Create a user
+    ```SQL
+    CREATE USER <the-name-of-ur-user> WITH PASSWORD '<password>';
+    ```
+3. Connect user and database created
+    ```SQL
+    GRANT ALL PRIVILEGES ON DATABASE <db_name> TO <name-of-user>;
+    ```
+4. Check the example.env file and create a similar .env file
+5. Thats it!!!!!!!!!!!!!!
