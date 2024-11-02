@@ -36,15 +36,16 @@ def create_post():
     if data is None:
         return {"status":"Bad Request"}, 400
     
-    db = current_app.config['COUCHDB_CONNECTION']
-    db_name = "posts"
+    db = current_app.config['DB_CONNECTION']
+
     post = {
         "post_id": str(uuid.uuid4()),
         "content": data.get("content"),
         "externalUrl": data.get("externalUrl"),
         "timestamp": int(time.time()),
-        "posterId": session["user_id"]
+        "poster_id": session["user_id"]
     }
     db.create_post(post)
+
     return "", 200
 

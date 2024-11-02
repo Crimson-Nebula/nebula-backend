@@ -13,7 +13,7 @@ from flask import (
 bp = Blueprint('user', __name__, url_prefix='/user')
 
 ### HOW TO USE COUCHDB INSTANCE ###
-# How to connect to database: couchdb_instance = current_app.config['COUCHDB_CONNECTION']
+# How to connect to database: couchdb_instance = current_app.config['DB_CONNECTION']
 # You can use the functions of the CouchDB class from the instance, DO NOT need to use import statements
 # Remember to check the return types :)
 ### END ###
@@ -43,7 +43,7 @@ def verify_session():
 
 @bp.route('/signup', methods=['POST'])
 def signup():
-    db = current_app.config['COUCHDB_CONNECTION']
+    db = current_app.config['DB_CONNECTION']
 
     user_id = str(uuid.uuid4())
 
@@ -72,7 +72,7 @@ def login():
         session['expiry'] = int(time.time()) + 3600 #Expires in 1 hour (for now)
 
         #Check if user exists
-        db = current_app.config['COUCHDB_CONNECTION']
+        db = current_app.config['DB_CONNECTION']
 
         user_lookup = db.get_user_by_auth_id(google_id)
         if user_lookup:
@@ -98,7 +98,7 @@ def get_info():
     else:
         return {"status":"No User ID provided"}, 500
     
-    db = current_app.config['COUCHDB_CONNECTION']
+    db = current_app.config['DB_CONNECTION']
 
     user_info = db.get_user_by_user_id(user_id)
     if not user_info:

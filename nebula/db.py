@@ -29,8 +29,11 @@ class Post(Base):
     __tablename__ = 'posts'
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     post_id = Column(String, unique=True)
-    timestamp = Column(TIMESTAMP)
+    timestamp = Column(Integer)
     content = Column(String)
+    externalUrl = Column(String)
+    poster_id = Column(String)
+
 
 def init_db():
     Base.metadata.create_all(engine)
