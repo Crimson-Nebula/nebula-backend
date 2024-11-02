@@ -42,12 +42,20 @@ class Post(Base):
 
 
 def init_db():
-    Base.metadata.create_all(engine)
-
+    # Check if the database is connected, keep retrying every second.
+    db_connected = False
+    while not db_connected:
+        print("Attempting to connect to DB")
+        try:
+            Base.metadata.create_all(engine)
+            db_connected = True
+        except Exception as e:
+            time.sleep(1)
 
 class Database:
     def __init__(self):
         self.session = Session()
+        init_db()
 
     def create_user(self, user_data):
         try:
